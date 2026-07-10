@@ -62,10 +62,10 @@ class ContributionTests(TestCase):
         self.member, self.group = create_member_in_group()
         self.client.force_authenticate(user=self.member)
 
-    @patch("apps.contributions.tasks.initiate_debit")
-    @patch("apps.contributions.tasks.verify_transaction")
+    @patch("utils.flutterwave.verify_transaction", return_value=True)
+    @patch("utils.flutterwave.initiate_debit")
     def test_contribution_record_is_created_when_monthly_deduction_task_runs(
-        self, mock_verify, mock_debit
+        self, mock_debit, mock_verify
     ):
         StandingOrder.objects.create(
             member=self.member,
@@ -75,7 +75,6 @@ class ContributionTests(TestCase):
             deduction_day=25,
         )
         mock_debit.return_value = {"status": "success", "data": {"id": "FLW-REF-001"}}
-        mock_verify.return_value = True
 
         from apps.contributions.tasks import process_monthly_deductions
         process_monthly_deductions()
@@ -90,7 +89,7 @@ class ContributionTests(TestCase):
             ).exists()
         )
 
-    @patch("apps.contributions.tasks.initiate_debit")
+    @patch("utils.flutterwave.initiate_debit", return_value=None)
     def test_contribution_status_is_marked_as_failed_when_flutterwave_returns_an_error(
         self, mock_debit
     ):
@@ -101,7 +100,6 @@ class ContributionTests(TestCase):
             amount=300000,
             deduction_day=25,
         )
-        mock_debit.return_value = None
 
         from apps.contributions.tasks import process_monthly_deductions
         process_monthly_deductions()
@@ -135,10 +133,10 @@ class ContributionTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @patch("apps.contributions.tasks.update_reserve_fund")
-    @patch("apps.contributions.tasks.initiate_debit")
-    @patch("apps.contributions.tasks.verify_transaction")
+    @patch("utils.flutterwave.verify_transaction", return_value=True)
+    @patch("utils.flutterwave.initiate_debit")
     def test_reserve_fund_increases_by_two_percent_of_contribution_after_each_successful_deduction(
-        self, mock_verify, mock_debit, mock_reserve
+        self, mock_debit, mock_verify, mock_reserve
     ):
         StandingOrder.objects.create(
             member=self.member,
@@ -148,7 +146,6 @@ class ContributionTests(TestCase):
             deduction_day=25,
         )
         mock_debit.return_value = {"status": "success", "data": {"id": "FLW-REF-002"}}
-        mock_verify.return_value = True
 
         from apps.contributions.tasks import process_monthly_deductions
         process_monthly_deductions()

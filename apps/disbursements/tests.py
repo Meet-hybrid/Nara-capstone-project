@@ -65,7 +65,7 @@ class DisbursementTests(TestCase):
                 status="PROCESSED",
             )
 
-    @patch("apps.disbursements.views.initiate_transfer")
+    @patch("utils.flutterwave.initiate_transfer")
     def test_pot_is_disbursed_to_the_correct_member_based_on_the_rotation_order(
         self, mock_transfer
     ):
@@ -78,8 +78,7 @@ class DisbursementTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         disbursement = PotDisbursement.objects.get(group=self.group)
-        expected_collector = self.members[0]  # Position 1 collects in month 1
-        self.assertEqual(disbursement.recipient, expected_collector)
+        self.assertEqual(disbursement.recipient, self.members[0])
 
     def test_disbursement_does_not_trigger_if_any_contribution_in_the_group_is_still_pending(self):
         month_year = date.today().strftime("%Y-%m")
@@ -96,10 +95,11 @@ class DisbursementTests(TestCase):
         })
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @patch("apps.contributions.tasks.initiate_transfer")
-    @patch("apps.contributions.tasks.send_whatsapp")
+    @patch("utils.termii.send_whatsapp")
+    @patch("utils.flutterwave.initiate_transfer")
+    @patch("apps.contributions.tasks._is_last_day_of_month", return_value=True)
     def test_collector_receives_whatsapp_notification_when_pot_is_sent_to_their_account(
-        self, mock_whatsapp, mock_transfer
+        self, _mock_date, mock_transfer, mock_whatsapp
     ):
         self._create_all_contributions_processed()
         mock_transfer.return_value = {"data": {"id": "FLW-TRANS-002"}}
@@ -108,12 +108,12 @@ class DisbursementTests(TestCase):
         trigger_pot_disbursement()
 
         mock_whatsapp.assert_called_once()
-        call_args = mock_whatsapp.call_args[0]
-        self.assertEqual(call_args[0], self.members[0].phone)
+        self.assertEqual(mock_whatsapp.call_args[0][0], self.members[0].phone)
 
-    @patch("apps.contributions.tasks.initiate_transfer")
+    @patch("utils.flutterwave.initiate_transfer")
+    @patch("apps.contributions.tasks._is_last_day_of_month", return_value=True)
     def test_all_group_members_receive_in_app_notification_when_monthly_pot_is_disbursed(
-        self, mock_transfer
+        self, _mock_date, mock_transfer
     ):
         self._create_all_contributions_processed()
         mock_transfer.return_value = {"data": {"id": "FLW-TRANS-003"}}
@@ -121,14 +121,13 @@ class DisbursementTests(TestCase):
         from apps.contributions.tasks import trigger_pot_disbursement
         trigger_pot_disbursement()
 
-        notification_count = Notification.objects.filter(
-            notif_type="POT_MONTH",
-        ).count()
+        notification_count = Notification.objects.filter(notif_type="POT_MONTH").count()
         self.assertEqual(notification_count, len(self.members))
 
-    @patch("apps.contributions.tasks.initiate_transfer")
+    @patch("utils.flutterwave.initiate_transfer")
+    @patch("apps.contributions.tasks._is_last_day_of_month", return_value=True)
     def test_rotation_advances_to_the_next_member_after_disbursement_is_confirmed(
-        self, mock_transfer
+        self, _mock_date, mock_transfer
     ):
         self._create_all_contributions_processed()
         mock_transfer.return_value = {"data": {"id": "FLW-TRANS-004"}}

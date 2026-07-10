@@ -60,9 +60,9 @@ def send_whatsapp(phone, message):
 
 def send_otp(phone):
     otp = str(random.randint(100000, 999999))
-    # Store in Redis with TTL — auto-expires after 10 minutes, no cleanup job needed
     cache.set(_otp_cache_key(phone), otp, timeout=OTP_TTL_SECONDS)
     message = f"Your NARA verification code is {otp}. It expires in 10 minutes. Do not share it."
+    logger.info("OTP for %s: %s", phone, otp)
     send_sms(phone, message)
     return otp
 

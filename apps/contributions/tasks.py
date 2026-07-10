@@ -1,6 +1,10 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from datetime import date, timedelta
+import calendar
+
+from utils.flutterwave import initiate_debit, initiate_transfer, verify_transaction
+from utils.termii import send_sms, send_whatsapp
 
 logger = get_task_logger(__name__)
 
@@ -10,8 +14,6 @@ def process_monthly_deductions(self):
     """Runs on the 25th of every month at 6am Lagos time."""
     from apps.standing_orders.models import StandingOrder
     from apps.contributions.models import Contribution
-    from utils.flutterwave import initiate_debit, verify_transaction
-    from utils.termii import send_sms
 
     today = date.today()
     month_year = today.strftime("%Y-%m")
@@ -75,7 +77,6 @@ def process_monthly_deductions(self):
 def check_failed_deductions(self):
     """Runs every day at 9am — reminds members with failed contributions."""
     from apps.contributions.models import Contribution
-    from utils.termii import send_sms
 
     seven_days_ago = date.today() - timedelta(days=7)
 
@@ -103,16 +104,21 @@ def check_failed_deductions(self):
             logger.warning("Member %s flagged for review after 3 consecutive failed deductions.", member.email)
 
 
+def _is_last_day_of_month():
+    today = date.today()
+    return today.day == calendar.monthrange(today.year, today.month)[1]
+
+
 @shared_task(bind=True, max_retries=3)
 def trigger_pot_disbursement(self):
-    """Runs on the last day of each month at 5pm."""
+    """Runs every day at 5pm — only executes on the last day of the month."""
+    if not _is_last_day_of_month():
+        return
     from apps.groups.models import SavingsGroup
     from apps.contributions.models import Contribution
     from apps.disbursements.models import PotDisbursement
     from apps.groups.models import GroupMembership
     from apps.notifications.models import Notification
-    from utils.flutterwave import initiate_transfer
-    from utils.termii import send_whatsapp
 
     today = date.today()
     month_year = today.strftime("%Y-%m")
@@ -189,7 +195,7 @@ def trigger_pot_disbursement(self):
 def send_deduction_reminders():
     """Runs 3 days before each member's deduction day."""
     from apps.standing_orders.models import StandingOrder
-    from utils.termii import send_whatsapp
+
 
     today = date.today()
     target_day = (today + timedelta(days=3)).day
@@ -254,7 +260,7 @@ def promote_waitlist_member(group_id):
     """Promotes the highest-priority waitlist member when a group slot opens."""
     from apps.groups.models import SavingsGroup, GroupMembership
     from apps.waitlist.models import Waitlist
-    from utils.termii import send_whatsapp
+
 
     try:
         group = SavingsGroup.objects.get(id=group_id)

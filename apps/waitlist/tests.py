@@ -42,7 +42,7 @@ class WaitlistTests(TestCase):
         self.assertEqual(entries[0].priority, 1)
         self.assertEqual(entries[1].priority, 2)
 
-    @patch("apps.contributions.tasks.send_whatsapp")
+    @patch("utils.termii.send_whatsapp")
     def test_highest_priority_waitlist_member_is_promoted_when_a_group_slot_opens(
         self, mock_whatsapp
     ):
@@ -71,7 +71,7 @@ class WaitlistTests(TestCase):
         entry = Waitlist.objects.get(member=self.member)
         self.assertEqual(entry.status, "PROMOTED")
 
-    @patch("apps.contributions.tasks.send_whatsapp")
+    @patch("utils.termii.send_whatsapp")
     def test_promoted_waitlist_member_receives_whatsapp_message_welcoming_them_to_the_group(
         self, mock_whatsapp
     ):

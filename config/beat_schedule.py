@@ -12,10 +12,11 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.contributions.tasks.check_failed_deductions",
         "schedule": crontab(hour=9, minute=0),
     },
-    # Trigger pot disbursements on the last day of each month at 5:00pm
+    # Trigger pot disbursements every day at 5:00pm — the task itself checks
+    # if it is the last day of the month before doing anything.
     "trigger-pot-disbursement": {
         "task": "apps.contributions.tasks.trigger_pot_disbursement",
-        "schedule": crontab(hour=17, minute=0, day_of_month="last"),
+        "schedule": crontab(hour=17, minute=0),
     },
     # Send deduction reminders every day at 8:00am (task checks if deduction day is in 3 days)
     "send-deduction-reminders": {
