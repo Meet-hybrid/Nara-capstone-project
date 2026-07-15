@@ -1,31 +1,40 @@
+# Celery beat schedule - disabled for Vercel deployment
+# To enable, add 'celery' and 'django-celery-beat' to requirements.txt
+
+"""
 from celery.schedules import crontab
 
-# All times are Lagos time (Africa/Lagos, UTC+1)
+# Celery Beat schedule configuration
 CELERY_BEAT_SCHEDULE = {
-    # Deduct contributions on the 25th of every month at 6:00am
+    # Monthly deductions - 25th of every month at 6am WAT (Lagos time)
     "process-monthly-deductions": {
         "task": "apps.contributions.tasks.process_monthly_deductions",
         "schedule": crontab(hour=6, minute=0, day_of_month=25),
+        "options": {"queue": "deductions"},
     },
-    # Check for failed deductions every day at 9:00am
+    # Failed deduction reminders - every day at 9am
     "check-failed-deductions": {
         "task": "apps.contributions.tasks.check_failed_deductions",
         "schedule": crontab(hour=9, minute=0),
+        "options": {"queue": "reminders"},
     },
-    # Trigger pot disbursements every day at 5:00pm — the task itself checks
-    # if it is the last day of the month before doing anything.
+    # Pot disbursement - last day of month at 5pm
     "trigger-pot-disbursement": {
         "task": "apps.contributions.tasks.trigger_pot_disbursement",
-        "schedule": crontab(hour=17, minute=0),
+        "schedule": crontab(hour=17, minute=0, day_of_month="last"),
+        "options": {"queue": "disbursements"},
     },
-    # Send deduction reminders every day at 8:00am (task checks if deduction day is in 3 days)
+    # Deduction reminders - run daily to check who has deductions in 3 days
     "send-deduction-reminders": {
         "task": "apps.contributions.tasks.send_deduction_reminders",
         "schedule": crontab(hour=8, minute=0),
+        "options": {"queue": "reminders"},
     },
-    # Check grace periods every day at 8:00am
+    # Grace period checks - daily at 8am
     "check-grace-periods": {
         "task": "apps.contributions.tasks.check_grace_periods",
-        "schedule": crontab(hour=8, minute=30),
+        "schedule": crontab(hour=8, minute=0),
+        "options": {"queue": "insurance"},
     },
 }
+"""

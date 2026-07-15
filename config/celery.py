@@ -1,3 +1,7 @@
+# Celery configuration - disabled for Vercel deployment
+# To enable celery, add 'celery' to requirements.txt and uncomment below
+
+"""
 import os
 from celery import Celery
 
@@ -6,3 +10,4 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
 app = Celery("nara")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
+"""
