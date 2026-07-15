@@ -47,14 +47,10 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",") if os.environ.get("CORS_ALLOWED_ORIGINS") else []
 
-# Redis for Celery on Vercel
-REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-CELERY_BROKER_URL = REDIS_URL
-
-# Update cache configuration for Vercel Redis
+# Use local memory cache on Vercel (no Redis needed for basic deployment)
 CACHES["default"] = {
-    "BACKEND": "django.core.cache.backends.redis.RedisCache",
-    "LOCATION": REDIS_URL,
+    "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    "LOCATION": "unique-snowflake",
 }
 
 # Email settings for production
@@ -78,5 +74,4 @@ if SENTRY_DSN:
         send_default_pii=False,
     )
 
-# Disable celery beat on Vercel (use Vercel Cron Jobs instead)
-CELERY_BEAT_SCHEDULE = {}
+# Celery removed for Vercel deployment to simplify dependencies

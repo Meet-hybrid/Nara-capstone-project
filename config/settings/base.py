@@ -21,8 +21,6 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
-    "django_celery_beat",
-    "django_celery_results",
     "apps.members",
     "apps.authentication",
     "apps.groups",
@@ -111,15 +109,8 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_CREDENTIALS = True
 
-CELERY_BROKER_URL = env("REDIS_URL", default="redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = "django-db"
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = "Africa/Lagos"
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
-from config.beat_schedule import CELERY_BEAT_SCHEDULE  # noqa: E402, F401
+# Celery removed for Vercel deployment to simplify dependencies
+# For production with background tasks, use a separate worker service
 
 CACHES = {
     "default": {
