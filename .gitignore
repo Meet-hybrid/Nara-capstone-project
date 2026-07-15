@@ -1,3 +1,4 @@
+# Python / Django
 .env
 *.log
 __pycache__/
@@ -10,5 +11,44 @@ dist/
 build/
 staticfiles/
 media/
-.DS_Store
 db.sqlite3
+
+# Node.js / Frontend
+node_modules/
+
+# Expo
+.expo/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# Debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# TypeScript
+*.tsbuildinfo
+
+# Local env files
+.env*.local
+
+# macOS / OS
+.DS_Store
+*.pem
+
+# Example/Generated folders
+app-example
+/ios
+/android
