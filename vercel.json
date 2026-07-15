@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "config/wsgi.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "staticfiles"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "config/wsgi.py"
+    }
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "config.settings.vercel",
+    "PYTHONPATH": "/var/task",
+    "DEBUG": "False"
+  },
+  "functions": {
+    "config/wsgi.py": {
+      "maxDuration": 10
+    }
+  },
+  "installCommand": "pip install -r requirements.txt && python manage.py collectstatic --noinput",
+  "buildCommand": "python manage.py migrate --noinput"
+}
