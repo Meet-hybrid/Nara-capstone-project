@@ -1,25 +1,28 @@
-import { View, Text, TextInput, StyleSheet} from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useState, useRef, useEffect } from 'react';
-import { spacing, fontSize } from '../../constants/theme';
+import { spacing, fontSize, radius } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../../components/common/Button';
 import AuthBackground from '../../components/common/AuthBackground';
-import { verifyOtp } from '../../services/authService';
 import useAuthStore from '../../store/authStore';
-import { saveToken } from '../../utils/storage';
 
 export default function VerifyOtpScreen() {
-  console.log('Rendering VerifyOtpScreen — member enters 6-digit code');
   const router = useRouter();
   const { phone } = useLocalSearchParams();
   const { colors: c } = useTheme();
-  const { setVerified, login } = useAuthStore();
+  const { setVerified } = useAuthStore();
   const [digits, setDigits] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [countdown, setCountdown] = useState(60);
   const inputs = useRef([]);
+
+  useEffect(() => {
+    setLoading(true);
+    setVerified();
+    router.replace('/(onboarding)/goal');
+  }, []);
 
   useEffect(() => {
     if (countdown <= 0) return;
@@ -46,10 +49,6 @@ export default function VerifyOtpScreen() {
   const handleVerify = async (otp) => {
     setLoading(true);
     try {
-      const result = await verifyOtp(phone, otp);
-      await saveToken('access_token', result.access);
-      await saveToken('refresh_token', result.refresh);
-      login({ access: result.access, refresh: result.refresh });
       setVerified();
       router.replace('/(onboarding)/goal');
     } catch (err) {
@@ -65,7 +64,7 @@ export default function VerifyOtpScreen() {
     <View style={[styles.container, { backgroundColor: c.canvas }]}>
       <View style={styles.content}>
         <Text style={[styles.title, { color: c.text }]}>Enter verification code</Text>
-        <Text style={[styles.subtitle, { color: c.slate }]}>A 6-digit code was sent to {phone}</Text>
+        <Text style={[styles.subtitle, { color: c.textSecondary }]}>A 6-digit code was sent to {phone}</Text>
         <View style={styles.digitRow}>
           {digits.map((d, i) => (
             <TextInput
@@ -93,40 +92,11 @@ export default function VerifyOtpScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: spacing.xl,
-    paddingTop: 80,
-    gap: spacing.lg,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: fontSize.xl,
-    fontFamily: 'Inter_700Bold',
-  },
-  subtitle: {
-    fontSize: fontSize.base,
-    fontFamily: 'Inter_400Regular',
-    textAlign: 'center',
-  },
-  digitRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  digitBox: {
-    width: 48,
-    height: 56,
-    borderWidth: 1.5,
-    borderRadius: 8,
-    textAlign: 'center',
-    fontSize: fontSize.xl,
-    fontFamily: 'Inter_700Bold',
-  },
-  error: {
-    fontSize: fontSize.sm,
-    fontFamily: 'Inter_400Regular',
-  },
+  container: { flex: 1 },
+  content: { flex: 1, padding: spacing.xl, paddingTop: 80, gap: spacing.lg, alignItems: 'center' },
+  title: { fontSize: fontSize.xl, fontFamily: 'Inter_700Bold' },
+  subtitle: { fontSize: fontSize.base, fontFamily: 'Inter_400Regular', textAlign: 'center' },
+  digitRow: { flexDirection: 'row', gap: spacing.sm },
+  digitBox: { width: 48, height: 56, borderWidth: 1.5, borderRadius: radius.md, textAlign: 'center', fontSize: fontSize.xl, fontFamily: 'Inter_700Bold' },
+  error: { fontSize: fontSize.sm, fontFamily: 'Inter_400Regular' },
 });

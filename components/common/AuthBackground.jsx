@@ -1,7 +1,7 @@
 import { View, Dimensions } from 'react-native';
 
-const FOREST = '#123B2F';
-const GOLD = '#D4A64F';
+const ACCENT = '#6366F1';
+const GOLD = '#F59E0B';
 
 const { width: W, height: H } = Dimensions.get('window');
 
@@ -37,9 +37,9 @@ export default function AuthBackground() {
             left: c.left, top: c.top,
             width: c.size, height: c.size,
             borderRadius: c.size / 2,
-            backgroundColor: c.outline ? 'transparent' : (c.color || FOREST),
+            backgroundColor: c.outline ? 'transparent' : (c.color || ACCENT),
             borderWidth: c.outline ? 1 : 0,
-            borderColor: FOREST,
+            borderColor: ACCENT,
             opacity: c.op,
           }}
         />

@@ -1,31 +1,21 @@
-import { View, StyleSheet} from 'react-native';
-import { colors } from '../../constants/theme';
+import { View } from 'react-native';
+import { useTheme } from '../../hooks/useTheme';
 
 export function TrackBar({ months, completed }) {
+  const { colors: c } = useTheme();
   return (
-    <View style={styles.bar}>
+    <View style={{ flexDirection: 'row', gap: 4 }}>
       {Array.from({ length: months }).map((_, i) => (
         <View
           key={i}
-          style={[styles.dot, i < completed && styles.filled]}
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: i < completed ? c.accent : c.divider,
+          }}
         />
       ))}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row',
-    gap: 4,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.divider,
-  },
-  filled: {
-    backgroundColor: colors.parchment,
-  },
-});

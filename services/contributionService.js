@@ -4,7 +4,7 @@ import { getToken } from '../utils/storage';
 const BASE = '/contributions';
 
 export const getContributions = async () => {
-  return await api.get(`${BASE}/contributions/`);
+  return await api.get(`${BASE}/`);
 };
 
 export const getContributionByMonth = async (monthYear) => {

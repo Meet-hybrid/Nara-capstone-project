@@ -3,7 +3,7 @@ import api from './api';
 const BASE = '/groups';
 
 export const getGroups = async () => {
-  return await api.get(`${BASE}/groups/`);
+  return await api.get(`${BASE}/`);
 };
 
 export const getMyGroup = async () => {

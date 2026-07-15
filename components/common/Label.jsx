@@ -1,16 +1,8 @@
-import { Text, StyleSheet} from 'react-native';
-import { colors, fontSize } from '../../constants/theme';
+import { Text} from 'react-native';
+import { useTheme } from '../../hooks/useTheme';
+import { fontSize } from '../../constants/theme';
 
 export function Label({ children }) {
-  return <Text style={styles.label}>{children}</Text>;
+  const { colors: c } = useTheme();
+  return <Text style={{ fontSize: fontSize.xs, fontFamily: 'Inter_700Bold', color: c.parchment, letterSpacing: 1, textTransform: 'uppercase' }}>{children}</Text>;
 }
-
-const styles = StyleSheet.create({
-  label: {
-    fontSize: fontSize.xs,
-    fontFamily: 'Inter_700Bold',
-    color: colors.parchment,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
-});

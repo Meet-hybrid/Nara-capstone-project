@@ -3,7 +3,7 @@ import api from './api';
 const BASE = '/standing-orders';
 
 export const createStandingOrder = async (data) => {
-  return await api.post(`${BASE}/standing-orders/`, data);
+  return await api.post(`${BASE}/`, data);
 };
 
 export const getMyStandingOrder = async () => {

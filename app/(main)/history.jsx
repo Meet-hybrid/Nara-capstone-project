@@ -1,6 +1,6 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, StyleSheet} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
-import { spacing, fontSize } from '../../constants/theme';
+import { spacing, fontSize, radius } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 import { getContributions, downloadStatement } from '../../services/contributionService';
 import { ScreenHeader } from '../../components/common/ScreenHeader';
@@ -10,8 +10,7 @@ import { ContributionRow } from '../../components/history/ContributionRow';
 import { formatNaira } from '../../utils/formatCurrency';
 
 export default function HistoryScreen() {
-  console.log('Rendering HistoryScreen — contribution ledger');
-  const { colors: c } = useTheme();
+  const { colors: c, shadows: s } = useTheme();
   const [contributions, setContributions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -38,18 +37,18 @@ export default function HistoryScreen() {
   const processedCount = contributions.filter((c) => c.status === 'PROCESSED').length;
 
   if (loading) {
-    return <View style={[styles.center, { backgroundColor: c.canvas }]}><ActivityIndicator size="large" color={c.forest} /></View>;
+    return <View style={[styles.center, { backgroundColor: c.canvas }]}><ActivityIndicator size="large" color={c.accent} /></View>;
   }
 
   return (
     <View style={[styles.container, { backgroundColor: c.canvas }]}>
       <ScreenHeader label="History" title="Contributions" />
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={[styles.summaryCard, { backgroundColor: c.surface }]}>
+        <View style={[styles.summaryCard, { backgroundColor: c.surface, borderColor: c.divider, ...s.md }]}>
           <CircleRing progress={processedCount / Math.max(contributions.length, 1)} />
           <View>
-            <Text style={[styles.summaryLabel, { color: c.slateLight }]}>Total contributed</Text>
-            <Text style={[styles.summaryAmount, { color: c.forest }]}>{formatNaira(totalContributed)}</Text>
+            <Text style={[styles.summaryLabel, { color: c.textSecondary }]}>Total contributed</Text>
+            <Text style={[styles.summaryAmount, { color: c.accent }]}>{formatNaira(totalContributed)}</Text>
           </View>
         </View>
 
@@ -70,8 +69,10 @@ export default function HistoryScreen() {
           ))}
         </View>
 
-        <TouchableOpacity style={[styles.downloadBtn, { borderColor: c.forest }]} onPress={downloadStatement}>
-          <Text style={[styles.downloadText, { color: c.forest }]}>Download statement</Text>
+        {error && <Text style={[styles.errorText, { color: c.danger }]}>{error}</Text>}
+
+        <TouchableOpacity style={[styles.downloadBtn, { borderColor: c.accent }]} onPress={downloadStatement}>
+          <Text style={[styles.downloadText, { color: c.accent }]}>Download statement</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -81,12 +82,13 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  content: { paddingTop: spacing.sm, gap: spacing.md, paddingBottom: spacing.xl },
-  summaryCard: { flexDirection: 'row', marginHorizontal: spacing.lg, borderRadius: 16, padding: spacing.lg, gap: spacing.md, alignItems: 'center' },
-  summaryLabel: { fontSize: fontSize.sm, fontFamily: 'Inter_400Regular' },
-  summaryAmount: { fontSize: fontSize.lg, fontFamily: 'Inter_700Bold', marginTop: 2 },
-  section: { paddingHorizontal: spacing.lg, gap: spacing.sm },
+  content: { paddingTop: spacing.sm, gap: spacing.md, paddingBottom: spacing.xl, paddingHorizontal: spacing.xl },
+  summaryCard: { flexDirection: 'row', borderRadius: radius.md, padding: spacing.lg, gap: spacing.md, alignItems: 'center', borderWidth: 1 },
+  summaryLabel: { fontSize: fontSize.sm, fontFamily: 'Inter_400Regular', letterSpacing: 0.3, textTransform: 'uppercase' },
+  summaryAmount: { fontSize: fontSize.lg, fontFamily: 'Inter_700Bold', marginTop: 2, fontVariant: ['tabular-nums'] },
+  section: { gap: spacing.sm },
   sectionTitle: { fontSize: fontSize.md, fontFamily: 'Inter_700Bold' },
-  downloadBtn: { marginHorizontal: spacing.lg, padding: spacing.md, alignItems: 'center', borderWidth: 1.5, borderRadius: 24 },
+  errorText: { fontSize: fontSize.sm, fontFamily: 'Inter_400Regular', textAlign: 'center' },
+  downloadBtn: { padding: spacing.md, alignItems: 'center', borderWidth: 1.5, borderRadius: radius.md },
   downloadText: { fontSize: fontSize.base, fontFamily: 'Inter_700Bold' },
 });

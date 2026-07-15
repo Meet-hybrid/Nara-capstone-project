@@ -13,8 +13,10 @@ export function useMember() {
     setError(null);
     try {
       const [profile, dash] = await Promise.all([getMyProfile(), getDashboard()]);
-      setMember(profile.data || profile);
-      setDashboard(dash.data || dash);
+      const profileData = profile.data?.data ?? profile.data ?? profile;
+      const dashData = dash.data?.data ?? dash.data ?? dash;
+      setMember(profileData);
+      setDashboard(dashData);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load member data');
     } finally {

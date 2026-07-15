@@ -1,23 +1,27 @@
-import { View, Text, StyleSheet} from 'react-native';
-import { colors, spacing, fontSize } from '../../constants/theme';
+import { View, Text, StyleSheet } from 'react-native';
+import { spacing, fontSize, radius } from '../../constants/theme';
+import { useTheme } from '../../hooks/useTheme';
 
 export function ActivityFeed({ activities }) {
+  const { colors: c, shadows: s } = useTheme();
 
   const dotColors = {
-    credit: colors.success,
-    payout: colors.parchment,
-    setup: colors.forest,
+    credit: c.success,
+    payout: c.warning,
+    setup: c.accent,
   };
 
+  if (!activities?.length) return null;
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Recent activity</Text>
+    <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.divider, ...s.md }]}>
+      <Text style={[styles.heading, { color: c.text }]}>Recent activity</Text>
       {activities.map((item, i) => (
         <View key={i} style={styles.row}>
-          <View style={[styles.dot, { backgroundColor: dotColors[item.type] || colors.slate }]} />
+          <View style={[styles.dot, { backgroundColor: dotColors[item.type] || c.textDisabled }]} />
           <View style={styles.textWrap}>
-            <Text style={styles.action}>{item.action}</Text>
-            <Text style={styles.detail}>{item.detail}</Text>
+            <Text style={[styles.action, { color: c.text }]}>{item.description || item.action}</Text>
+            <Text style={[styles.detail, { color: c.textSecondary }]}>{item.date || item.detail}</Text>
           </View>
         </View>
       ))}
@@ -26,13 +30,15 @@ export function ActivityFeed({ activities }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  card: {
+    borderRadius: radius.md,
+    borderWidth: 1,
+    padding: spacing.lg,
     gap: spacing.md,
   },
   heading: {
     fontSize: fontSize.md,
     fontFamily: 'Inter_700Bold',
-    color: colors.text,
   },
   row: {
     flexDirection: 'row',
@@ -51,12 +57,10 @@ const styles = StyleSheet.create({
   action: {
     fontSize: fontSize.base,
     fontFamily: 'Inter_500Medium',
-    color: colors.text,
   },
   detail: {
     fontSize: fontSize.sm,
     fontFamily: 'Inter_400Regular',
-    color: colors.slateLight,
     marginTop: 2,
   },
 });

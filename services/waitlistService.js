@@ -3,7 +3,7 @@ import api from './api';
 const BASE = '/waitlist';
 
 export const joinWaitlist = async () => {
-  return await api.post(`${BASE}/waitlist/`);
+  return await api.post(`${BASE}/`);
 };
 
 export const getWaitlistPosition = async () => {
@@ -11,5 +11,5 @@ export const getWaitlistPosition = async () => {
 };
 
 export const leaveWaitlist = async () => {
-  await api.delete(`${BASE}/leave/`);
+  await api.delete(`${BASE}/`);
 };

@@ -9,10 +9,10 @@ import Svg, {
   G,
 } from 'react-native-svg';
 
-const FOREST = '#123B2F';
-const GOLD = '#D4A64F';
-const SURFACE = '#FAF9F6';
-const SAGE = '#D8DDD8';
+const ACCENT = '#6366F1';
+const GOLD = '#F59E0B';
+const SURFACE = '#F8F9FC';
+const SAGE = '#E2E8F0';
 
 const SIZE = 280;
 const CX = SIZE / 2;
@@ -111,8 +111,8 @@ export default function ThePot({ size = 280 }) {
             <Stop offset="100%" stopColor={GOLD} stopOpacity="0" />
           </RadialGradient>
           <RadialGradient id="memberGlow" cx="50%" cy="50%" r="50%">
-            <Stop offset="0%" stopColor={FOREST} stopOpacity="0.12" />
-            <Stop offset="100%" stopColor={FOREST} stopOpacity="0" />
+            <Stop offset="0%" stopColor={ACCENT} stopOpacity="0.12" />
+            <Stop offset="100%" stopColor={ACCENT} stopOpacity="0" />
           </RadialGradient>
         </Defs>
 
@@ -169,7 +169,7 @@ export default function ThePot({ size = 280 }) {
             key={`member-core-${i}`}
             cx={p.x} cy={p.y}
             r={2.5}
-            fill={FOREST}
+            fill={ACCENT}
             opacity={0.5}
           />
         ))}

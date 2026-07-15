@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { BankInput, BankPickerModal } from '../../components/common/BankPicker';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -6,6 +6,10 @@ import { spacing, fontSize } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
+import { isValidNigerianPhone, isValidEmail, isStrongPassword, isValidBVN, isValidNIN, isValidAccountNumber } from '../../utils/validators';
+import { register } from '../../services/authService';
+import { saveToken } from '../../utils/storage';
+import useAuthStore from '../../store/authStore';
 
 const { width: W } = Dimensions.get('window');
 
@@ -29,11 +33,8 @@ const CIRCLES = [
   { size: 24, left: '45%', top: '70%', op: 0.07, outline: true },
   { size: 6, left: '75%', top: '35%', op: 0.18 },
 ];
-import { isValidNigerianPhone, isValidEmail, isStrongPassword, isValidBVN, isValidNIN, isValidAccountNumber } from '../../utils/validators';
-import { register } from '../../services/authService';
 
 export default function RegisterScreen() {
-  console.log('Rendering RegisterScreen — collecting member details');
   const router = useRouter();
   const { colors: c } = useTheme();
   const [fullName, setFullName] = useState('');
@@ -64,12 +65,20 @@ export default function RegisterScreen() {
     return Object.keys(errs).length === 0;
   };
 
+  const { login } = useAuthStore();
+
   const handleRegister = async () => {
     if (!validate()) return;
     setLoading(true);
     try {
-      await register(fullName, email, phone, password, bank, accountNumber, bvn, nin);
-      router.push({ pathname: '/(auth)/verify-otp', params: { phone } });
+      const result = await register(fullName, email, phone, password, bank, accountNumber, bvn, nin);
+      const { access, refresh } = result?.data || {};
+      if (access && refresh) {
+        await saveToken('access_token', access);
+        await saveToken('refresh_token', refresh);
+        login({ access, refresh });
+      }
+      router.replace('/(onboarding)/goal');
     } catch (err) {
       const apiErrors = err.response?.data?.errors || {};
       setErrors(apiErrors);
@@ -90,29 +99,29 @@ export default function RegisterScreen() {
   return (
     <View style={[styles.container, { backgroundColor: c.canvas }]}>
       <ScrollView contentContainerStyle={styles.content} style={{ backgroundColor: 'transparent' }}>
-      <View style={styles.headerSection}>
-        <Text style={[styles.badge, { color: c.forest }]}>GET STARTED</Text>
-        <Text style={[styles.title, { color: c.text }]}>Create your account</Text>
-        <Text style={[styles.subtitle, { color: c.slate }]}>Join a savings circle and start building your future.</Text>
-      </View>
+        <View style={styles.headerSection}>
+          <Text style={[styles.badge, { color: c.accent }]}>GET STARTED</Text>
+          <Text style={[styles.title, { color: c.text }]}>Create your account</Text>
+          <Text style={[styles.subtitle, { color: c.textSecondary }]}>Join a savings circle and start building your future.</Text>
+        </View>
 
-      <Input label="Full name" value={fullName} onChangeText={setFullName} error={errors.fullName} />
-      <Input label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" error={errors.email} />
-      <Input label="Phone number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="080 1234 5678" error={errors.phone} />
-      <Input label="Password" value={password} onChangeText={setPassword} secureTextEntry error={errors.password} />
-      <Input label="Confirm password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry error={errors.confirmPassword} />
-      <View style={[styles.divider, { backgroundColor: c.divider }]} />
-      <BankInput value={bank} onPress={() => setBankPickerVisible(true)} error={errors.bank} />
-      <BankPickerModal visible={bankPickerVisible} onClose={() => setBankPickerVisible(false)} onSelect={setBank} />
-      <Input label="Account number" value={accountNumber} onChangeText={setAccountNumber} keyboardType="number-pad" placeholder="0123456789" maxLength={10} error={errors.accountNumber} />
-      <Input label="BVN" value={bvn} onChangeText={setBvn} keyboardType="number-pad" placeholder="11-digit BVN" maxLength={11} error={errors.bvn} />
-      <Input label="NIN" value={nin} onChangeText={setNin} keyboardType="number-pad" placeholder="11-digit NIN" maxLength={11} error={errors.nin} />
-      {errors.form && <Text style={[styles.formError, { color: c.danger }]}>{errors.form}</Text>}
-      <Button title="Create account" onPress={handleRegister} loading={loading} disabled={!canSubmit} />
-      <TouchableOpacity onPress={() => router.push('/(auth)/login')} activeOpacity={0.7}>
-        <Text style={[styles.loginLink, { color: c.forest }]}>Already have an account? Log in</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <Input label="Full name" value={fullName} onChangeText={setFullName} error={errors.fullName} />
+        <Input label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" error={errors.email} />
+        <Input label="Phone number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="080 1234 5678" error={errors.phone} />
+        <Input label="Password" value={password} onChangeText={setPassword} secureTextEntry error={errors.password} />
+        <Input label="Confirm password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry error={errors.confirmPassword} />
+        <View style={[styles.divider, { backgroundColor: c.divider }]} />
+        <BankInput value={bank} onPress={() => setBankPickerVisible(true)} error={errors.bank} />
+        <BankPickerModal visible={bankPickerVisible} onClose={() => setBankPickerVisible(false)} onSelect={setBank} />
+        <Input label="Account number" value={accountNumber} onChangeText={setAccountNumber} keyboardType="number-pad" placeholder="0123456789" maxLength={10} error={errors.accountNumber} />
+        <Input label="BVN" value={bvn} onChangeText={setBvn} keyboardType="number-pad" placeholder="11-digit BVN" maxLength={11} error={errors.bvn} />
+        <Input label="NIN" value={nin} onChangeText={setNin} keyboardType="number-pad" placeholder="11-digit NIN" maxLength={11} error={errors.nin} />
+        {errors.form && <Text style={[styles.formError, { color: c.danger }]}>{errors.form}</Text>}
+        <Button title="Create account" onPress={handleRegister} loading={loading} disabled={!canSubmit} />
+        <TouchableOpacity onPress={() => router.push('/(auth)/login')} activeOpacity={0.7}>
+          <Text style={[styles.loginLink, { color: c.accent }]}>Already have an account? Log in</Text>
+        </TouchableOpacity>
+      </ScrollView>
       {CIRCLES.map((circ, i) => (
         <View
           key={i}
@@ -121,9 +130,9 @@ export default function RegisterScreen() {
             left: circ.left, top: circ.top,
             width: circ.size, height: circ.size,
             borderRadius: circ.size / 2,
-            backgroundColor: circ.outline ? 'transparent' : c.forest,
+            backgroundColor: circ.outline ? 'transparent' : c.accent,
             borderWidth: circ.outline ? 1 : 0,
-            borderColor: c.forest,
+            borderColor: c.accent,
             opacity: circ.op,
           }}
           pointerEvents="none"
@@ -134,45 +143,13 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: spacing.xl,
-    paddingTop: spacing.xxl + spacing.md,
-    gap: spacing.md,
-  },
-  headerSection: {
-    gap: spacing.xs,
-    marginBottom: spacing.sm,
-  },
-  badge: {
-    fontSize: fontSize.xs,
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: 3,
-  },
-  title: {
-    fontSize: fontSize.xl,
-    fontFamily: 'Inter_700Bold',
-  },
-  subtitle: {
-    fontSize: fontSize.base,
-    fontFamily: 'Inter_400Regular',
-    lineHeight: 20,
-  },
-  formError: {
-    fontSize: fontSize.sm,
-    fontFamily: 'Inter_400Regular',
-    textAlign: 'center',
-  },
-  divider: {
-    height: 1,
-    marginVertical: spacing.xs,
-  },
-  loginLink: {
-    fontSize: fontSize.base,
-    fontFamily: 'Inter_500Medium',
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-  },
+  container: { flex: 1 },
+  content: { padding: spacing.xl, paddingTop: spacing.xxl + spacing.md, gap: spacing.md },
+  headerSection: { gap: spacing.xs, marginBottom: spacing.sm },
+  badge: { fontSize: fontSize.caption, fontFamily: 'Inter_600SemiBold', letterSpacing: 3 },
+  title: { fontSize: fontSize.xl, fontFamily: 'Inter_700Bold' },
+  subtitle: { fontSize: fontSize.base, fontFamily: 'Inter_400Regular', lineHeight: 20 },
+  formError: { fontSize: fontSize.sm, fontFamily: 'Inter_400Regular', textAlign: 'center' },
+  divider: { height: 1, marginVertical: spacing.xs },
+  loginLink: { fontSize: fontSize.base, fontFamily: 'Inter_500Medium', textAlign: 'center', textDecorationLine: 'underline' },
 });

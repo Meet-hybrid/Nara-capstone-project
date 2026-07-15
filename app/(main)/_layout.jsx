@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { fontSize } from '../../constants/theme';
+import { fontSize, spacing } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 import useNotificationStore from '../../store/notificationStore';
 
@@ -14,104 +14,75 @@ const tabIcons = {
   account: { focused: 'person', unfocused: 'person-outline' },
 };
 
+const tabLabels = {
+  index: 'Home',
+  circle: 'Circle',
+  history: 'History',
+  protection: 'Cover',
+  alerts: 'Alerts',
+  account: 'Account',
+};
+
 export default function MainTabLayout() {
-  const { colors: themeColors } = useTheme();
+  const { colors: c } = useTheme();
   const unreadCount = useNotificationStore((s) => s.unreadCount);
 
   return (
     <Tabs
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: themeColors.surface,
-          borderTopColor: themeColors.divider,
+          backgroundColor: c.surface,
+          borderTopColor: c.divider,
           borderTopWidth: 1,
-          elevation: 12,
-          shadowColor: '#000',
-          shadowOpacity: 0.08,
-          shadowOffset: { width: 0, height: -4 },
-          shadowRadius: 12,
+          elevation: 0,
+          shadowOpacity: 0,
           height: 64,
           paddingBottom: 8,
-          paddingTop: 8,
+          paddingTop: 6,
         },
-        tabBarActiveTintColor: themeColors.forest,
-        tabBarInactiveTintColor: themeColors.slateLight,
+        tabBarActiveTintColor: c.accent,
+        tabBarInactiveTintColor: c.textDisabled,
+        tabBarLabel: tabLabels[route.name] || route.name,
         tabBarLabelStyle: {
-          fontSize: fontSize.xs,
-          fontFamily: 'Inter_600SemiBold',
-          textTransform: 'uppercase',
+          fontSize: fontSize.caption,
+          fontFamily: 'Inter_500Medium',
+          letterSpacing: 0.3,
           marginTop: 2,
         },
         tabBarShowLabel: true,
-      }}
+        tabBarIcon: ({ focused, color }) => (
+          <View style={styles.iconWrap}>
+            <Ionicons
+              name={focused ? tabIcons[route.name]?.focused : tabIcons[route.name]?.unfocused}
+              size={22}
+              color={color}
+            />
+            {route.name === 'alerts' && unreadCount > 0 && (
+              <View style={[styles.badge, { backgroundColor: c.danger }]}>
+                <Text style={[styles.badgeText, { color: '#FFFFFF' }]}>{unreadCount}</Text>
+              </View>
+            )}
+          </View>
+        ),
+      })}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Overview',
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons name={focused ? tabIcons.index.focused : tabIcons.index.unfocused} size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="circle"
-        options={{
-          title: 'Circle',
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons name={focused ? tabIcons.circle.focused : tabIcons.circle.unfocused} size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="history"
-        options={{
-          title: 'History',
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons name={focused ? tabIcons.history.focused : tabIcons.history.unfocused} size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="protection"
-        options={{
-          title: 'Protection',
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons name={focused ? tabIcons.protection.focused : tabIcons.protection.unfocused} size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="alerts"
-        options={{
-          title: 'Alerts',
-          tabBarIcon: ({ focused, color }) => (
-            <View>
-              <Ionicons name={focused ? tabIcons.alerts.focused : tabIcons.alerts.unfocused} size={22} color={color} />
-              {unreadCount > 0 && (
-                <View style={[styles.badge, { backgroundColor: themeColors.danger }]}>
-                  <Text style={[styles.badgeText, { color: themeColors.surface }]}>{unreadCount}</Text>
-                </View>
-              )}
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="account"
-        options={{
-          title: 'Account',
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons name={focused ? tabIcons.account.focused : tabIcons.account.unfocused} size={22} color={color} />
-          ),
-        }}
-      />
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="circle" />
+      <Tabs.Screen name="history" />
+      <Tabs.Screen name="protection" />
+      <Tabs.Screen name="alerts" />
+      <Tabs.Screen name="account" />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
+  iconWrap: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   badge: {
     position: 'absolute',
     top: -4,

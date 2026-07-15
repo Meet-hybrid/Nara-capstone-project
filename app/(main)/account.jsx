@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Switch} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
 import { spacing, fontSize, radius } from '../../constants/theme';
 import { getMyProfile } from '../../services/memberService';
@@ -11,9 +11,8 @@ import { clearAllTokens } from '../../utils/storage';
 import { useEffect } from 'react';
 
 export default function AccountScreen() {
-  console.log('Rendering AccountScreen — profile and settings');
   const router = useRouter();
-  const { isDark, toggleTheme, colors: c } = useTheme();
+  const { isDark, toggleTheme, colors: c, shadows: s } = useTheme();
   const { member, setMember } = useMemberStore();
   const { logout } = useAuthStore();
 
@@ -52,28 +51,28 @@ export default function AccountScreen() {
     <View style={[styles.container, { backgroundColor: c.canvas }]}>
       <ScreenHeader label="Account" title="Profile" />
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={[styles.profileCard, { backgroundColor: c.surface }]}>
-          <View style={[styles.avatar, { backgroundColor: c.forest }]}>
-            <Text style={[styles.avatarText, { color: c.surface }]}>{member?.full_name?.[0] || 'M'}</Text>
+        <View style={[styles.profileCard, { backgroundColor: c.surface, borderColor: c.divider, ...s.md }]}>
+          <View style={[styles.avatar, { backgroundColor: c.accent }]}>
+            <Text style={[styles.avatarText, { color: '#FFFFFF' }]}>{member?.full_name?.[0] || 'M'}</Text>
           </View>
           <Text style={[styles.name, { color: c.text }]}>{member?.full_name || 'Member'}</Text>
-          <Text style={[styles.joinDate, { color: c.slate }]}>Member since {member?.joined_at ? new Date(member.joined_at).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : 'January 2026'}</Text>
+          <Text style={[styles.joinDate, { color: c.textSecondary }]}>Member since {member?.joined_at ? new Date(member.joined_at).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : 'January 2026'}</Text>
         </View>
 
-        <View style={[styles.themeRow, { backgroundColor: c.surface }]}>
+        <View style={[styles.themeRow, { backgroundColor: c.surface, borderColor: c.divider, ...s.md }]}>
           <Text style={[styles.themeLabel, { color: c.text }]}>Dark mode</Text>
           <Switch
             value={isDark}
             onValueChange={toggleTheme}
-            trackColor={{ false: c.divider, true: c.forest }}
-            thumbColor={isDark ? c.parchment : c.slateLight}
+            trackColor={{ false: c.divider, true: c.accent + '60' }}
+            thumbColor={isDark ? c.accent : c.textDisabled}
           />
         </View>
 
-        <View style={[styles.detailsCard, { backgroundColor: c.surface }]}>
+        <View style={[styles.detailsCard, { backgroundColor: c.surface, borderColor: c.divider, ...s.md }]}>
           {details.map((d, i) => (
             <View key={i} style={[styles.detailRow, i < details.length - 1 && { borderBottomWidth: 1, borderBottomColor: c.divider }]}>
-              <Text style={[styles.detailLabel, { color: c.slateLight }]}>{d.label}</Text>
+              <Text style={[styles.detailLabel, { color: c.textSecondary }]}>{d.label}</Text>
               <Text style={[styles.detailValue, { color: c.text }]}>{d.value}</Text>
             </View>
           ))}
@@ -92,19 +91,19 @@ export default function AccountScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { paddingTop: spacing.sm, gap: spacing.md, paddingBottom: spacing.xl },
-  profileCard: { alignItems: 'center', marginHorizontal: spacing.lg, borderRadius: radius.lg, padding: spacing.xl, gap: spacing.sm },
+  content: { paddingTop: spacing.sm, gap: spacing.md, paddingBottom: spacing.xl, paddingHorizontal: spacing.xl },
+  profileCard: { alignItems: 'center', borderRadius: radius.md, padding: spacing.xl, gap: spacing.sm, borderWidth: 1 },
   avatar: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: fontSize.xl, fontFamily: 'Inter_700Bold' },
   name: { fontSize: fontSize.lg, fontFamily: 'Inter_700Bold' },
   joinDate: { fontSize: fontSize.sm, fontFamily: 'Inter_400Regular' },
-  themeRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: spacing.lg, borderRadius: radius.lg, padding: spacing.md, paddingHorizontal: spacing.lg },
+  themeRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderRadius: radius.md, padding: spacing.md, paddingHorizontal: spacing.lg, borderWidth: 1 },
   themeLabel: { fontSize: fontSize.md, fontFamily: 'Inter_600SemiBold' },
-  detailsCard: { marginHorizontal: spacing.lg, borderRadius: radius.lg, overflow: 'hidden' },
+  detailsCard: { borderRadius: radius.md, overflow: 'hidden', borderWidth: 1 },
   detailRow: { flexDirection: 'row', justifyContent: 'space-between', padding: spacing.md, paddingHorizontal: spacing.lg },
   detailLabel: { fontSize: fontSize.sm, fontFamily: 'Inter_400Regular', flex: 1 },
   detailValue: { fontSize: fontSize.base, fontFamily: 'Inter_600SemiBold', flex: 1.5, textAlign: 'right' },
-  actions: { marginHorizontal: spacing.lg, gap: spacing.sm },
+  actions: { gap: spacing.sm },
   signOutBtn: { padding: spacing.md, alignItems: 'center', borderRadius: radius.md, borderWidth: 1.5 },
   signOutText: { fontSize: fontSize.base, fontFamily: 'Inter_700Bold' },
 });

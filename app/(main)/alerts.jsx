@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import { spacing, fontSize } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
@@ -8,7 +8,6 @@ import { ScreenHeader } from '../../components/common/ScreenHeader';
 import { NotificationCard } from '../../components/alerts/NotificationCard';
 
 export default function AlertsScreen() {
-  console.log('Rendering AlertsScreen — notification feed');
   const { colors: c } = useTheme();
   const { notifications, setNotifications, markAllRead } = useNotificationStore();
   const [loading, setLoading] = useState(true);
@@ -46,20 +45,22 @@ export default function AlertsScreen() {
         rightElement={
           unreadCount > 0 && (
             <TouchableOpacity onPress={handleMarkAllRead}>
-              <Text style={[styles.markAllRead, { color: c.parchment }]}>Mark all read</Text>
+              <Text style={[styles.markAllRead, { color: c.accent }]}>Mark all read</Text>
             </TouchableOpacity>
           )
         }
       />
-      <View style={[styles.unreadBar, { backgroundColor: c.forest }]}>
-        <View style={[styles.unreadDot, { backgroundColor: c.parchment }]} />
-        <Text style={styles.unreadText}>
-          {unreadCount} unread {unreadCount === 1 ? 'notification' : 'notifications'}
-        </Text>
-      </View>
+      {unreadCount > 0 && (
+        <View style={[styles.unreadBar, { backgroundColor: c.accent }]}>
+          <View style={[styles.unreadDot, { backgroundColor: '#FFFFFF' }]} />
+          <Text style={styles.unreadText}>
+            {unreadCount} unread {unreadCount === 1 ? 'notification' : 'notifications'}
+          </Text>
+        </View>
+      )}
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={c.forest} />
+          <ActivityIndicator size="large" color={c.accent} />
         </View>
       ) : (
         <FlatList
@@ -86,8 +87,8 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   markAllRead: { fontSize: fontSize.sm, fontFamily: 'Inter_600SemiBold' },
-  unreadBar: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm },
+  unreadBar: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.xl, paddingVertical: spacing.sm },
   unreadDot: { width: 8, height: 8, borderRadius: 4 },
-  unreadText: { color: 'rgba(255,255,255,0.8)', fontSize: fontSize.sm, fontFamily: 'Inter_600SemiBold' },
-  list: { padding: spacing.lg, gap: spacing.sm, paddingBottom: spacing.xl },
+  unreadText: { color: 'rgba(255,255,255,0.9)', fontSize: fontSize.sm, fontFamily: 'Inter_600SemiBold' },
+  list: { padding: spacing.xl, gap: spacing.sm, paddingBottom: spacing.xl },
 });

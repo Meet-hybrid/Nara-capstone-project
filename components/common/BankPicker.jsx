@@ -1,5 +1,6 @@
-import { View, Text, Modal, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
-import { colors, spacing, fontSize, radius } from '../../constants/theme';
+import { View, Text, Modal, TouchableOpacity, FlatList } from 'react-native';
+import { useTheme } from '../../hooks/useTheme';
+import { spacing, fontSize, radius } from '../../constants/theme';
 
 const NIGERIAN_BANKS = [
   'Access Bank',
@@ -39,21 +40,25 @@ export function BankPicker({ value, onSelect, error }) {
 }
 
 export function BankPickerModal({ visible, onClose, onSelect }) {
+  const { colors: c, shadows: s } = useTheme();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
-        <View style={styles.sheet}>
-          <View style={styles.handle} />
-          <Text style={styles.title}>Select your bank</Text>
+      <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }} activeOpacity={1} onPress={onClose}>
+        <View style={{ backgroundColor: c.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, paddingTop: spacing.sm, paddingBottom: spacing.xl, maxHeight: '70%', ...s.lg }}>
+          <View style={{ width: 40, height: 4, backgroundColor: c.divider, borderRadius: 2, alignSelf: 'center', marginBottom: spacing.md }} />
+          <Text style={{ fontSize: fontSize.md, fontFamily: 'Inter_700Bold', color: c.text, paddingHorizontal: spacing.lg, marginBottom: spacing.sm }}>Select your bank</Text>
           <FlatList
             data={NIGERIAN_BANKS}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
-              <TouchableOpacity style={styles.option} onPress={() => { onSelect(item); onClose(); }}>
-                <Text style={styles.optionText}>{item}</Text>
+              <TouchableOpacity
+                style={{ paddingVertical: spacing.md, paddingHorizontal: spacing.lg, borderBottomWidth: 1, borderBottomColor: c.divider }}
+                onPress={() => { onSelect(item); onClose(); }}
+              >
+                <Text style={{ fontSize: fontSize.md, fontFamily: 'Inter_400Regular', color: c.text }}>{item}</Text>
               </TouchableOpacity>
             )}
-            style={styles.list}
+            style={{ paddingHorizontal: 0 }}
           />
         </View>
       </TouchableOpacity>
@@ -62,53 +67,25 @@ export function BankPickerModal({ visible, onClose, onSelect }) {
 }
 
 export function BankInput({ value, onPress, error }) {
+  const { colors: c } = useTheme();
   return (
-    <View style={styles.wrapper}>
-      <Text style={styles.label}>Bank name</Text>
-      <TouchableOpacity style={[styles.input, error && styles.inputError]} onPress={onPress}>
-        <Text style={[styles.inputText, !value && styles.placeholder]}>
+    <View style={{ gap: spacing.xs }}>
+      <Text style={{ fontSize: fontSize.sm, fontFamily: 'Inter_600SemiBold', color: c.textSecondary, letterSpacing: 0.3 }}>Bank name</Text>
+      <TouchableOpacity
+        style={{
+          flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+          borderWidth: 1.5, borderColor: error ? c.danger : c.divider, borderRadius: radius.md,
+          paddingHorizontal: spacing.md, paddingVertical: spacing.sm + 4,
+          backgroundColor: c.surface,
+        }}
+        onPress={onPress}
+      >
+        <Text style={{ fontSize: fontSize.md, fontFamily: 'Inter_400Regular', color: value ? c.text : c.textDisabled, flex: 1 }}>
           {value || 'Select your bank'}
         </Text>
-        <Text style={styles.chevron}>{'\u25BC'}</Text>
+        <Text style={{ fontSize: 10, color: c.textDisabled, marginLeft: spacing.sm }}>{'\u25BC'}</Text>
       </TouchableOpacity>
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && <Text style={{ fontSize: fontSize.sm, color: c.danger, fontFamily: 'Inter_400Regular' }}>{error}</Text>}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  wrapper: { gap: spacing.xs },
-  label: { fontSize: fontSize.sm, fontFamily: 'Inter_600SemiBold', color: colors.slate },
-  input: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    borderWidth: 1, borderColor: colors.divider, borderRadius: radius.sm,
-    paddingHorizontal: spacing.md, paddingVertical: spacing.sm + 4,
-    backgroundColor: colors.surface,
-  },
-  inputError: { borderColor: colors.danger },
-  inputText: { fontSize: fontSize.md, fontFamily: 'Inter_400Regular', color: colors.text, flex: 1 },
-  placeholder: { color: colors.slateLight },
-  chevron: { fontSize: 10, color: colors.slateLight, marginLeft: spacing.sm },
-  error: { fontSize: fontSize.sm, color: colors.danger, fontFamily: 'Inter_400Regular' },
-  overlay: {
-    flex: 1, backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'flex-end',
-  },
-  sheet: {
-    backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg,
-    paddingTop: spacing.sm, paddingBottom: spacing.xl, maxHeight: '70%',
-  },
-  handle: {
-    width: 40, height: 4, backgroundColor: colors.divider, borderRadius: 2,
-    alignSelf: 'center', marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: fontSize.md, fontFamily: 'Inter_700Bold', color: colors.text,
-    paddingHorizontal: spacing.lg, marginBottom: spacing.sm,
-  },
-  list: { paddingHorizontal: spacing.lg },
-  option: {
-    paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.divider,
-  },
-  optionText: { fontSize: fontSize.md, fontFamily: 'Inter_400Regular', color: colors.text },
-});

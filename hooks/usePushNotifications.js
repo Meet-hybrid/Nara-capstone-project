@@ -32,6 +32,8 @@ export function usePushNotifications() {
   }, []);
 
   async function registerForPushNotifications() {
+    if (Platform.OS === 'web') return;
+
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -17,9 +17,8 @@ const GOALS = [
 ];
 
 export default function GoalScreen() {
-  console.log('Rendering GoalScreen — member picks a savings goal');
   const router = useRouter();
-  const { colors: c } = useTheme();
+  const { colors: c, shadows: s } = useTheme();
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -40,11 +39,11 @@ export default function GoalScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: c.forest }]}>
+    <View style={[styles.container, { backgroundColor: c.accent }]}>
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: c.surface }]}>What is your savings goal?</Text>
+        <Text style={[styles.headerTitle, { color: '#FFFFFF' }]}>What is your savings goal?</Text>
         <View style={[styles.progressBar, { backgroundColor: 'rgba(255,255,255,0.25)' }]}>
-          <View style={[styles.progressFill, { width: '33%', backgroundColor: c.parchment }]} />
+          <View style={[styles.progressFill, { width: '33%', backgroundColor: '#FFFFFF' }]} />
         </View>
         <Text style={[styles.step, { color: 'rgba(255,255,255,0.7)' }]}>Step 1 of 3</Text>
       </View>
@@ -54,13 +53,13 @@ export default function GoalScreen() {
           return (
             <TouchableOpacity
               key={g.key}
-              style={[styles.card, { backgroundColor: c.surface, borderColor: 'transparent' }, isSel && { borderColor: c.forest, backgroundColor: c.successLight }]}
+              style={[styles.card, { backgroundColor: c.surface, borderColor: c.divider, ...s.sm }, isSel && { borderColor: c.accent, backgroundColor: c.accentLight }]}
               onPress={() => setSelected(g.key)}
               activeOpacity={0.7}
             >
-              <MaterialCommunityIcons name={g.icon} size={32} color={c.forest} />
-              <Text style={[styles.cardLabel, { color: c.text }, isSel && { color: c.forest }]}>{g.label}</Text>
-              {isSel && <Text style={[styles.check, { color: c.parchment }]}>{'\u2713'}</Text>}
+              <MaterialCommunityIcons name={g.icon} size={32} color={isSel ? c.accent : c.textSecondary} />
+              <Text style={[styles.cardLabel, { color: c.text }, isSel && { color: c.accent }]}>{g.label}</Text>
+              {isSel && <View style={[styles.checkCircle, { backgroundColor: c.accent }]}><Text style={styles.checkMark}>{'\u2713'}</Text></View>}
             </TouchableOpacity>
           );
         })}
@@ -80,9 +79,10 @@ const styles = StyleSheet.create({
   progressFill: { height: '100%', borderRadius: 3 },
   step: { fontSize: fontSize.sm, fontFamily: 'Inter_500Medium', marginTop: spacing.xs },
   grid: { flexDirection: 'row', flexWrap: 'wrap', padding: spacing.lg, gap: spacing.sm, borderTopLeftRadius: 32, borderTopRightRadius: 32, marginTop: spacing.lg, flex: 1 },
-  card: { width: '47%', borderRadius: radius.lg, padding: spacing.lg, alignItems: 'center', gap: spacing.sm, borderWidth: 2 },
+  card: { width: '47%', borderRadius: radius.md, padding: spacing.lg, alignItems: 'center', gap: spacing.sm, borderWidth: 1.5 },
   cardLabel: { fontSize: fontSize.base, fontFamily: 'Inter_600SemiBold', textAlign: 'center' },
-  check: { position: 'absolute', top: spacing.sm, right: spacing.sm, fontSize: fontSize.md, fontFamily: 'Inter_700Bold' },
+  checkCircle: { position: 'absolute', top: spacing.sm, right: spacing.sm, width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  checkMark: { color: '#FFFFFF', fontSize: fontSize.caption, fontFamily: 'Inter_700Bold' },
   footer: { padding: spacing.lg, paddingBottom: spacing.xl },
   error: { fontSize: fontSize.sm, fontFamily: 'Inter_400Regular', textAlign: 'center', marginBottom: spacing.sm },
 });

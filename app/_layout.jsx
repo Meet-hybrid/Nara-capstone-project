@@ -11,6 +11,7 @@ import {
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
 import { useTheme } from '../hooks/useTheme';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,6 +24,8 @@ function RootLayoutInner() {
     Inter_600SemiBold,
     Inter_700Bold,
   });
+
+  usePushNotifications();
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {

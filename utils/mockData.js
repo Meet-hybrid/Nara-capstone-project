@@ -63,6 +63,7 @@ export const mockMembers = [
 ];
 
 export const mockGroupMatch = {
+  group_id: '123e4567-e89b-12d3-a456-426614174000',
   group_name: 'Land Owambe',
   monthly_pot: 1800000,
   member_count: 6,

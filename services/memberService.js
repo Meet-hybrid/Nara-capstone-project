@@ -3,7 +3,8 @@ import api from './api';
 const BASE = '/members';
 
 export const getMyProfile = async () => {
-  return await api.get(`${BASE}/me/`);
+  const { data } = await api.get(`${BASE}/me/`);
+  return data;
 };
 
 export const updateProfile = async (profileData) => {
@@ -11,11 +12,13 @@ export const updateProfile = async (profileData) => {
 };
 
 export const getDashboard = async () => {
-  return await api.get(`${BASE}/me/dashboard/`);
+  const { data } = await api.get(`${BASE}/me/dashboard/`);
+  return data;
 };
 
 export const getNotifications = async () => {
-  return await api.get(`${BASE}/me/notifications/`);
+  const { data } = await api.get(`${BASE}/me/notifications/`);
+  return data;
 };
 
 export const markNotificationsRead = async () => {

@@ -1,31 +1,13 @@
-import { View, Text, StyleSheet} from 'react-native';
-import { colors, radius, spacing, fontSize } from '../../constants/theme';
+import { View, Text } from 'react-native';
+import { useTheme } from '../../hooks/useTheme';
+import { radius, spacing, fontSize } from '../../constants/theme';
 
 export function ScenarioCard({ title, description }) {
+  const { colors: c, shadows: s } = useTheme();
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.desc}>{description}</Text>
+    <View style={{ backgroundColor: c.surface, borderRadius: radius.md, padding: spacing.md, gap: spacing.sm, borderWidth: 1, borderColor: c.divider, ...s.sm }}>
+      <Text style={{ fontSize: fontSize.base, fontFamily: 'Inter_700Bold', color: c.text }}>{title}</Text>
+      <Text style={{ fontSize: fontSize.sm, fontFamily: 'Inter_400Regular', color: c.textSecondary, lineHeight: 20 }}>{description}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
-  title: {
-    fontSize: fontSize.base,
-    fontFamily: 'Inter_700Bold',
-    color: colors.text,
-  },
-  desc: {
-    fontSize: fontSize.sm,
-    fontFamily: 'Inter_400Regular',
-    color: colors.slate,
-    lineHeight: 20,
-  },
-});

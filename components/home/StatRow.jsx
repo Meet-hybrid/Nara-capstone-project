@@ -1,13 +1,16 @@
-import { View, Text, StyleSheet} from 'react-native';
-import { colors, radius, spacing, fontSize } from '../../constants/theme';
+import { View, Text, StyleSheet } from 'react-native';
+import { radius, spacing, fontSize } from '../../constants/theme';
+import { useTheme } from '../../hooks/useTheme';
 
 export function StatRow({ stats }) {
+  const { colors: c, shadows: s } = useTheme();
+
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { backgroundColor: c.surface, borderColor: c.divider, ...s.md }]}>
       {stats.map((stat, i) => (
-        <View key={i} style={[styles.stat, i < stats.length - 1 && styles.border]}>
-          <Text style={styles.value}>{stat.value}</Text>
-          <Text style={styles.label}>{stat.label}</Text>
+        <View key={i} style={[styles.stat, i < stats.length - 1 && { borderRightWidth: 1, borderRightColor: c.divider }]}>
+          <Text style={[styles.value, { color: c.text }]}>{stat.value}</Text>
+          <Text style={[styles.label, { color: c.textSecondary }]}>{stat.label}</Text>
         </View>
       ))}
     </View>
@@ -17,28 +20,24 @@ export function StatRow({ stats }) {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.md,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    padding: spacing.lg,
   },
   stat: {
     flex: 1,
     alignItems: 'center',
     gap: spacing.xs,
   },
-  border: {
-    borderRightWidth: 1,
-    borderRightColor: colors.divider,
-  },
   value: {
     fontSize: fontSize.lg,
     fontFamily: 'Inter_700Bold',
-    color: colors.text,
+    fontVariant: ['tabular-nums'],
   },
   label: {
-    fontSize: fontSize.xs,
-    fontFamily: 'Inter_400Regular',
-    color: colors.slateLight,
+    fontSize: fontSize.caption,
+    fontFamily: 'Inter_500Medium',
+    letterSpacing: 0.3,
     textTransform: 'uppercase',
   },
 });

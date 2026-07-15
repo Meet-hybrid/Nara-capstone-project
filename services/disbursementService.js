@@ -3,7 +3,7 @@ import api from './api';
 const BASE = '/disbursements';
 
 export const getDisbursements = async () => {
-  return await api.get(`${BASE}/disbursements/`);
+  return await api.get(`${BASE}/`);
 };
 
 export const processDisbursement = async () => {

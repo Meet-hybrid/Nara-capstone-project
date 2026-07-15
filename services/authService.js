@@ -8,7 +8,7 @@ export const register = async (fullName, email, phone, password, bank, accountNu
     email,
     phone,
     password,
-    bank,
+    bank_name: bank,
     account_number: accountNumber,
     bvn,
     nin,

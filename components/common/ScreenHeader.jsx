@@ -1,16 +1,16 @@
-import { View, Text, StyleSheet} from 'react-native';
-import { spacing, fontSize } from '../../constants/theme';
+import { View, Text, StyleSheet } from 'react-native';
+import { spacing, fontSize, radius } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 
 export function ScreenHeader({ label, title, rightElement }) {
-  const { colors: themeColors } = useTheme();
+  const { colors: c } = useTheme();
 
   return (
-    <View style={[styles.header, { backgroundColor: themeColors.canvas }]}>
-      <View style={[styles.banner, { backgroundColor: themeColors.forest }]}>
-        <Text style={[styles.label, { color: themeColors.parchment }]}>{label}</Text>
+    <View style={[styles.header, { backgroundColor: c.canvas }]}>
+      <View style={[styles.banner, { backgroundColor: c.canvas }]}>
+        {label && <Text style={[styles.label, { color: c.textSecondary }]}>{label}</Text>}
         <View style={styles.titleRow}>
-          <Text style={[styles.title, { color: themeColors.surface }]}>{title}</Text>
+          <Text style={[styles.title, { color: c.text }]}>{title}</Text>
           {rightElement}
         </View>
       </View>
@@ -21,16 +21,14 @@ export function ScreenHeader({ label, title, rightElement }) {
 const styles = StyleSheet.create({
   header: {},
   banner: {
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
     paddingTop: 56,
-    paddingBottom: spacing.lg,
-    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.md,
+    paddingHorizontal: spacing.xl,
   },
   label: {
-    fontSize: fontSize.xs,
-    fontFamily: 'Inter_700Bold',
-    letterSpacing: 1,
+    fontSize: fontSize.sm,
+    fontFamily: 'Inter_500Medium',
+    letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
   titleRow: {

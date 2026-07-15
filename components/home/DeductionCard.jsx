@@ -1,28 +1,31 @@
-import { View, Text, StyleSheet} from 'react-native';
-import { colors, radius, spacing, fontSize } from '../../constants/theme';
+import { View, Text, StyleSheet } from 'react-native';
+import { radius, spacing, fontSize } from '../../constants/theme';
+import { useTheme } from '../../hooks/useTheme';
 import { StatusPill } from '../common/StatusPill';
 import { formatNaira } from '../../utils/formatCurrency';
 
 export function DeductionCard({ amount, date, bank, status }) {
+  const { colors: c, shadows: s } = useTheme();
+
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.divider, ...s.md }]}>
       <View style={styles.topRow}>
         <View>
-          <Text style={styles.label}>Next deduction</Text>
-          <Text style={styles.date}>{date}</Text>
+          <Text style={[styles.label, { color: c.textSecondary }]}>Next deduction</Text>
+          <Text style={[styles.date, { color: c.text }]}>{date}</Text>
         </View>
         <StatusPill type={status} />
       </View>
-      <Text style={styles.amount}>{formatNaira(amount)}</Text>
-      <Text style={styles.bank}>{bank}</Text>
+      <Text style={[styles.amount, { color: c.text }]}>{formatNaira(amount)}</Text>
+      <Text style={[styles.bank, { color: c.textSecondary }]}>{bank}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.md,
+    borderWidth: 1,
     padding: spacing.lg,
     gap: spacing.sm,
   },
@@ -34,22 +37,22 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontSize.sm,
     fontFamily: 'Inter_400Regular',
-    color: colors.slateLight,
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
   },
   date: {
     fontSize: fontSize.md,
     fontFamily: 'Inter_600SemiBold',
-    color: colors.text,
     marginTop: 2,
   },
   amount: {
     fontSize: fontSize.xl,
     fontFamily: 'Inter_700Bold',
-    color: colors.forest,
+    letterSpacing: -0.5,
+    fontVariant: ['tabular-nums'],
   },
   bank: {
     fontSize: fontSize.sm,
     fontFamily: 'Inter_400Regular',
-    color: colors.slate,
   },
 });
