@@ -1,11 +1,23 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# Python / Django
+.env
+*.log
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+staticfiles/
+media/
+db.sqlite3
 
-# dependencies
+# Node.js / Frontend
 node_modules/
 
 # Expo
 .expo/
-dist/
 web-build/
 expo-env.d.ts
 
@@ -21,23 +33,22 @@ expo-env.d.ts
 # Metro
 .metro-health-check*
 
-# debug
+# Debug
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
+# TypeScript
+*.tsbuildinfo
+
+# Local env files
+.env*.local
+
+# macOS / OS
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-
+# Example/Generated folders
 app-example
-
-# generated native folders
 /ios
 /android
