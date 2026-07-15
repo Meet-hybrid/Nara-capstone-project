@@ -103,3 +103,4 @@ python manage.py test apps.contributions
 ## Deployment
 
 The repo includes a `Procfile` for Render with three process types — web (gunicorn), worker (celery), and beat (celery beat). Set `DJANGO_SETTINGS_MODULE=config.settings.prod` and configure environment variables on the hosting dashboard.
+# Force Vercel redeployment
