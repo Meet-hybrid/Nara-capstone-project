@@ -31,8 +31,6 @@ INSTALLED_APPS = [
     "apps.waitlist",
     "apps.notifications",
     "apps.admin_panel",
-    "django_celery_results",
-    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -116,8 +114,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": env("REDIS_URL", default="redis://localhost:6379/1"),
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
     }
 }
 
@@ -128,7 +125,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
