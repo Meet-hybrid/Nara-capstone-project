@@ -5,7 +5,7 @@ from .base import *  # noqa: F401, F403
 
 DEBUG = False
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["nara-backend.onrender.com"])  # noqa: F405
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["nara-capstone-project.onrender.com"])  # noqa: F405
 
 # Use DATABASE_URL (Render PostgreSQL) if provided; fall back to MySQL settings
 DATABASE_URL = env("DATABASE_URL", default="")  # noqa: F405
