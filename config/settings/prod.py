@@ -9,7 +9,7 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["nara-backend.onrender.com"])
 
 # Use DATABASE_URL (Render PostgreSQL) if provided; fall back to MySQL settings
 DATABASE_URL = env("DATABASE_URL", default="")  # noqa: F405
-if DATABASE_URL:
+if DATABASE_URL and not DATABASE_URL.startswith("fromDatabase"):
     DATABASES = {
         "default": dj_database_url.config(
             default=DATABASE_URL,
@@ -20,16 +20,8 @@ if DATABASE_URL:
 else:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": env("DB_NAME"),  # noqa: F405
-            "USER": env("DB_USER"),  # noqa: F405
-            "PASSWORD": env("DB_PASSWORD"),  # noqa: F405
-            "HOST": env("DB_HOST"),  # noqa: F405
-            "PORT": env("DB_PORT", default="3306"),  # noqa: F405
-            "OPTIONS": {
-                "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
-                "charset": "utf8mb4",
-            },
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 
