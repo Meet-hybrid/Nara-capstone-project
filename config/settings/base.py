@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     "apps.waitlist",
     "apps.notifications",
     "apps.admin_panel",
+    "django_celery_results",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [

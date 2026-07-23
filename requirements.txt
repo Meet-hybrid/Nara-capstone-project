@@ -18,9 +18,9 @@ gunicorn==22.0.0
 whitenoise==6.7.0
 
 # Remove for Vercel deployment (optional packages that cause issues)
-# redis==5.0.8
-# celery==5.4.0
-# django-celery-beat==2.6.0
-# django-celery-results==2.5.1
-# django-ratelimit==4.1.0
-# sentry-sdk==2.11.0
+redis==5.0.8
+celery==5.4.0
+django-celery-beat==2.6.0
+django-celery-results==2.5.1
+django-ratelimit==4.1.0
+sentry-sdk==2.11.0
